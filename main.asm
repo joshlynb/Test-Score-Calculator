@@ -18,17 +18,20 @@ TEST LD R4, i
 	 ADD R4, R4, R3
 	 BRzp END
 
-; don't want to write another loop so just this
 AND R1, R1, #0
-GETC ; take input
-OUT  ; show that it was taken
+
+SCORE_INPUT_LOOP
+	GETC
+	OUT 
+	LD R6, SCORE_INPUT_LC		; load Input Loop Counter into R6
+	ADD R6, R6, #-1
+	ST R6, INPUTLC
+	BRp SCORE_INPUT_LC		; loop until negative
 
 ADD R1, R0, R1 ; add 
 ADD R1, R1, #15
 ADD R1, R1, #15 ; decimal value conversion
 
-GETC
-OUT
 
 ADD R0, R0, #15 
 ADD R0, R0, #15 ; decimal value conversion
@@ -49,7 +52,7 @@ END
 
 HALT
 
-WELCOME .STRINGZ "Welcome to the test score calculator. To begin, please enter your five test scores in three digits each, with no spaces in between, for example: 010098100078085\n"
+WELCOME .STRINGZ "Enter a test score in the format XXX (ex. 100, 098, 015) \n"
 i .FILL #0
 limit .FILL #14
 ascii .FILL #30
