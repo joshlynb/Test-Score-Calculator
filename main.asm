@@ -25,7 +25,7 @@ SCORE_INPUT_LOOP
 	OUT 
 	LD R6, SCORE_INPUT_LC		; load Input Loop Counter into R6
 	ADD R6, R6, #-1
-	ST R6, INPUTLC
+	ST R6, SCORE_INPUT_LC
 	BRp SCORE_INPUT_LC		; loop until negative
 
 ADD R1, R0, R1 ; add 
@@ -56,6 +56,7 @@ WELCOME .STRINGZ "Enter a test score in the format XXX (ex. 100, 098, 015) \n"
 i .FILL #0
 limit .FILL #14
 ascii .FILL #30
+SCORE_INPUT_LC	.FILL #3
 CHARACTER_RECORDED .STRINGZ "Digit has been recorded.\n"
 SCORE_RECORDED .STRINGZ "Test score has been recorded.\n"
 .end
