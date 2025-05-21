@@ -5,6 +5,5 @@ This program prompts the user to input 5 test scores, and displays the minimum, 
 ## Instructions
 
 ## Authors
-Joshlyn B., Gray G., Heather L
 
 ## Date Published
