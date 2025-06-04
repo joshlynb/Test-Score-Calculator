@@ -9,25 +9,21 @@
 ;-------------------------------------------------------------------------
 ; Collect user input
 
-	LD	R4, INPUT_LC		; load Input Loop Counter into R4
+		LD	R4, INPUT_LC		; load Input Loop Counter into R4
 
 GET_INPUT
-	GETC				; Get character
-	OUT				; Echo character to console
-	JSR PUSH			; Push character into stack
-	ADD 	R4, R4, #-1		; Decrement Loop Counter
-	BRp 	GET_INPUT		; loop until R4 is zero or negative
+		GETC				; Get character
+		OUT				; Echo character to console
+		JSR 	PUSH_CHAR			; Push character into stack
+		ADD 	R4, R4, #-1		; Decrement Loop Counter
+		BRp 	GET_INPUT		; loop until R4 is zero or negative
 
-	LEA R0, PROMPT2
-	PUTS
-	LD	R4, INPUT_LC		; load Input Loop Counter into R4
+GET_SCORE
+		JSR 	POP_CHAR		; POP character from stack
+		JSR 	ENCODE			; Convert ASCII character to hexidecimal
+		
+		
 
-DISPLAY_INPUT
-	JSR POP
-	ST R0, CHAR
-	OUT
-	ADD 	R4, R4, #-1		; Decrement Loop Counter
-	BRp 	DISPLAY_INPUT		; loop until R4 is zero or negative
 
 
 PROMPT1 .STRINGZ "Enter a test score in the format XXX (ex. 100, 098, 015) \n"
@@ -35,8 +31,6 @@ PROMPT2 .STRINGZ "\nScore you entered is: \n"
 INPUT_LC	.FILL x3		; initializing get_input loop counter at x3
 CHAR 	.BLKW x3
 
-
-HALT
 
 ;-------------------------------------------------------------------------
 ;Subroutine CLEAR_REGISTER
@@ -49,43 +43,33 @@ CLEAR_REGISTER	AND R0, R0, #0
 		AND R5, R5, #0
 		RET
 ;-------------------------------------------------------------------------
-
-
 ;-------------------------------------------------------------------------
 ;Subroutine PUSH:Push item into stack
 
-PUSH  
-	LD R1, MAX			; MAX = -x3FFB
-        ADD R2, R6, R1			; compare stack pointer with x3FFF
-        BRz FAIL            		; Branch if stack is full
-        ADD R6, R6, #-7			; Adjust stack pointer	
-        STR R0, R6, #0			; Store value in R0 to stack
-        AND R5, R5, #0           	; SUCCESS: R5 = 0
-        JMP R7
+PUSH_CHAR  
+		LD R1, MAX			; MAX = -x3FFB
+       		ADD R2, R6, R1			; compare stack pointer with x3FFF
+       		BRz FAIL            		; Branch if stack is full
+       		ADD R6, R6, #-7			; Adjust stack pointer (decrement by 7 because ASCII is 7 bits)
+       		STR R0, R6, #0			; Store value in R0 to stack
+        	AND R5, R5, #0           	; SUCCESS: R5 = 0
+        	RET
 
 MAX	.FILL xC005
 ;-------------------------------------------------------------------------
-
-
 ;-------------------------------------------------------------------------
 ;Subroutine POP: Pop item from stack
 
-POP    	LD R1, EMPTY			; EMPTY = -x4000
-	ADD R2, R6, R1			; COMPARE STACK POINTER with x3FFF
-  	BRz FAIL			; Branch if stack is empty
-    	LDR R0, R6, #0			; Load popped value into R0
-   	ADD R6, R6, #7			; Adjust stack pointer 
-   	AND R5, R5, #0           	; SUCCESS: R5 = 0
-   	RET
+POP_CHAR    	LD R1, EMPTY			; EMPTY = -x4000
+		ADD R2, R6, R1			; COMPARE STACK POINTER with x3FFF
+  		BRz FAIL			; Branch if stack is empty
+    		LDR R0, R6, #0			; Load popped value into R0
+   		ADD R6, R6, #7			; Adjust stack pointer 
+   		AND R5, R5, #0           	; SUCCESS: R5 = 0
+   		RET
 
 EMPTY	.FILL xC000
 ;-------------------------------------------------------------------------
-
-
-
-
-
-
 ;-------------------------------------------------------------------------
 ;Subroutine FAIL; 
 
@@ -94,8 +78,31 @@ FAIL    AND R5, R5, #0			;OVERFLOW/UNDERFLOW DETECTED, FAIL: R5 = 1
    	RET
 ;-------------------------------------------------------------------------
 
+;-------------------------------------------------------------------------
+;Subroutine ENCODE: (ASCII 》o Hexadecimal conversion)
 
+ENCODE
+	AND R1, R1, #0			; Clear R1
+	ADD R1, R1, #15			; Subtracting 48 (ASCII offset) 
+	ADD R1, R1, #15
+	ADD R1, R1, #15
+	ADD R1, R1, #3
+	NOT R1, R1
+	ADD R1, R1, #1
+	ADD R0, R0, R1
+	RET
+;-------------------------------------------------------------------------
 
+;-------------------------------------------------------------------------
+;Subroutine DECODE: (ASCII 》o Hexadecimal conversion)
 
+DECODE
+	AND R1, R1, #0			; Clear R1
+	ADD R1, R1, #15			; Subtracting 48 (ASCII offset) 
+	ADD R1, R1, #15
+	ADD R1, R1, #15
+	ADD R1, R1, #3
+	ADD R0, R0, R1
+	RET
 
 .END
