@@ -13,6 +13,7 @@
 
 GET_INPUT
 	GETC
+	OUT
 	JSR PUSH
 	ADD 	R4, R4, #-1		; Decrement Loop Counter
 	BRp 	GET_INPUT		; loop until R4 is zero or negative
