@@ -133,7 +133,7 @@ FAIL    AND R5, R5, #0			;OVERFLOW/UNDERFLOW DETECTED, FAIL: R5 = 1
 
 
 ;--------------------------------------;
-;Subroutine ENCODE: (ASCII 》o Hexadecimal conversion)
+;Subroutine ENCODE: (ASCII to Hexadecimal conversion)
 ;--------------------------------------;
 ; R1:
 ; R0:
@@ -151,7 +151,7 @@ ENCODE
 	RET
 
 ;--------------------------------------;
-;Subroutine DECODE: (ASCII 》o Hexadecimal conversion)
+;Subroutine DECODE: (ASCII to Hexadecimal conversion)
 ;--------------------------------------;
 ; [INSERT COMMENTS HERE]
 ;--------------------------------------;
@@ -173,7 +173,7 @@ DECODE
 ;--------------------------------------;
 
 MULT_BY_10
-	;INSERT CODE HERE 
+	;[INSERT CODE HERE]
 	RET
 ;-------------------------------------------------------------------------
 ;-------------------------------------------------------------------------
