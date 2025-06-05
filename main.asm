@@ -10,8 +10,6 @@
 ; Collecting user input
 ;--------------------------------------;
 ; R4 : INPUT_LC (Character input loop counter = 3)
-; R0 : Register that contains pushed and popped values from stack
-; R3 : Register to temporarily store hexidecimal test score before storing in array
 ;--------------------------------------;
 
 
@@ -23,6 +21,14 @@ GET_INPUT
 		JSR 	PUSH_CHAR		; Push character into stack
 		ADD 	R4, R4, #-1		; Decrement Loop Counter
 		BRp 	GET_INPUT		; loop until R4 is zero or negative
+
+;--------------------------------------;
+; Getting hexadecimal value of score
+;--------------------------------------;
+; R0 : Register that contains popped values from stack
+; R3 : Register to temporarily store hexidecimal test score before storing in array
+;--------------------------------------;
+
 
 GET_SCORE
 		AND 	R0, R0, #0		; Clear R0
@@ -167,7 +173,7 @@ DECODE
 ;--------------------------------------;
 
 MULT_BY_10
-	;[INSERT CODE HERE]
+	;INSERT CODE HERE 
 	RET
 ;-------------------------------------------------------------------------
 ;-------------------------------------------------------------------------
@@ -181,7 +187,7 @@ MULT_BY_10
 ;-------------------------------------------------------------------------
 ;-----CALCULATE AVG, MIN, AND MAX------;
 
-;[INSERT CODE HERE]
+
 
 
 ;-------------------------------------------------------------------------
@@ -195,7 +201,7 @@ MULT_BY_10
 ;-------------------------------------------------------------------------
 ;-----SCORE TO LETTER CONVERSION------;
 
-;[INSERT CODE HERE]
+
 
 
 ;-------------------------------------------------------------------------
