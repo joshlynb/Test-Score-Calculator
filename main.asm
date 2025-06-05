@@ -22,8 +22,7 @@ GET_SCORE
 		JSR 	POP_CHAR		; POP character from stack
 		JSR 	ENCODE			; Convert ASCII character to hexidecimal
 		
-		
-
+		HALT
 
 
 PROMPT1 .STRINGZ "Enter a test score in the format XXX (ex. 100, 098, 015) \n"
