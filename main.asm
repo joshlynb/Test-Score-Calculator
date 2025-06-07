@@ -18,7 +18,7 @@ SAVE_REG5	.FILL x0
 SAVE_REG6	.FILL x0
 SAVE_LOC1	.FILL x0
 SAVE_LOC2	.FILL x0
-SCORE	.BLKW #40		; Array containing scores
+SCORES		.BLKW #5		; Array containing scores
 ;-------------------------------------------------------------------------
 
 
@@ -43,9 +43,6 @@ CLEAR_REGISTER	AND R0, R0, #0
 
 
 ;------------------------------GET USER INPUT-----------------------------
-
-
-
 SCORE_LOOP
 		ST	R7, SAVE_LOC1			; store R7 in SAVE_LOC1 so we can use RET to return to calling program (aka main program)
 		JSR	CLEAR_REGISTER			; Clear Registers 0-5
@@ -255,7 +252,7 @@ HUNDRED	.FILL x64
 
 
 
-;-------------------------ASSIGN LETTER TO SCORE--------------------------
+;----------------------ASSIGN LETTER GRADE TO SCORE-----------------------
 ;[INSERT CODE]
 ;-------------------------------------------------------------------------
 
