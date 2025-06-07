@@ -38,43 +38,35 @@ CLEAR_REGISTER	AND R0, R0, #0
 
 
 ;------------------------------GET USER INPUT-----------------------------
+;--------------------------------------;
+;Subroutine SCORE_LOOP
+;--------------------------------------;
+; R4 : INPUT_LC, contains the value of character input loop counter
+; R0 : Register that contains popped values from stack
+; R3 : Register to temporarily store hexidecimal test score before storing in array
+;
 SCORE_LOOP
-		ST	R7, SAVE_LOCATION1		; store R7 in SAVE_LOCATION1 so we can RET (return) to calling function
+		ST	R7, SAVE_LOCATION1		; store R7 in SAVE_LOCATION1 so we can use RET to return to calling program (aka main program)
 		JSR	CLEAR_REGISTER			; Clear Registers 0-5
 		LEA	R0, PROMPT1
 		PUTS					; Output PROMPT1: "Enter a test score in the format XYZ (ex. 100, 098, 015) \n"
-
-		LD	R4, INPUT_LC		; load Input Loop Counter into R4
-;--------------------------------------;
-;Subroutine GET_INPUT
-;--------------------------------------;
-; R4 : INPUT_LC (Character input loop counter = 3)
-;--------------------------------------;
-
-		
+		LD	R4, INPUT_LC			; load Input Loop Counter into R4	
 GET_INPUT
-		GETC				; Get character
-		OUT				; Echo character to console
-		JSR 	PUSH_CHAR		; Push character into stack
-		ADD 	R4, R4, #-1		; Decrement Loop Counter
-		BRp 	GET_INPUT		; loop until R4 is zero or negative
-
-;--------------------------------------;
-;Subroutine GET_SCORE
-;--------------------------------------;
-; R0 : Register that contains popped values from stack
-; R3 : Register to temporarily store hexidecimal test score before storing in array
-;--------------------------------------;
+		GETC					; Get character
+		OUT					; Echo character to console
+		JSR 	PUSH_CHAR			; Push character into stack
+		ADD 	R4, R4, #-1			; Decrement Loop Counter
+		BRp 	GET_INPUT			; loop until R4 is zero or negative
 GET_SCORE
-		AND 	R0, R0, #0		; Clear R0
-		JSR 	POP_CHAR		; POP character (one's digit) from stack
-		JSR 	ENCODE			; Convert ASCII character to hexidecimal
-		ADD	R3, R0, #0		; STORE popped value from R0 to R3
+		AND 	R0, R0, #0			; Clear R0
+		JSR 	POP_CHAR			; POP character (one's digit) from stack
+		JSR 	ENCODE				; Convert ASCII character to hexidecimal
+		ADD	R3, R0, #0			; STORE popped value from R0 to R3
 		
-		AND 	R0, R0, #0		; Clear R0
-		JSR 	POP_CHAR		; POP character (ten's digit) from stack
-		JSR 	ENCODE			; Convert ASCII character to hexidecimal
-		LD R7, SAVE_LOCATION1
+		AND 	R0, R0, #0			; Clear R0
+		JSR 	POP_CHAR			; POP character (ten's digit) from stack
+		JSR 	ENCODE				; Convert ASCII character to hexidecimal
+		LD 	R7, SAVE_LOCATION1		; Load SAVE_LOCATION1 to R7
 		RET
 
 
