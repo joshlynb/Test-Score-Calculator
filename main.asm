@@ -92,22 +92,20 @@ GET_SCORE
 ;-------------------;	
 		AND 	R0, R0, #0			; Clear R0
 		JSR 	POP_CHAR			; POP character (ten's digit) from stack
-		JSR 	ENCODE				; Convert ASCII character to hexidecimal
-		ST 	R0, SAVE_REG1			; save R0 value in SAVE_REG1	
-		JSR 	MULT_BY_10			; Multiply popped value by 10
+		JSR 	ENCODE				; Convert ASCII character to hexidecimal	
+		JSR 	MULT_BY_10			; Multiply R0 value by 10
 		ADD	R3, R3, R0			; Add tens's place value from R0 to R3
 
 ;-------------------;		
 ;adding hundred's place
 ; value to score
 ;-------------------;	
-		;AND 	R0, R0, #0			; Clear R0
-		;JSR 	POP_CHAR			; POP character (hundred's digit) from stack
-		;JSR 	ENCODE				; Convert ASCII character to hexidecimal
-		
-
-
-		;ADD	R3, R3, R0			; Add hundreds's place value from R0 to R3
+		AND 	R0, R0, #0			; Clear R0
+		JSR 	POP_CHAR			; POP character (hundred's digit) from stack
+		JSR 	ENCODE				; Convert ASCII character to hexidecimal
+		;ST 	R0, SAVE_REG2			; save R0 value in SAVE_REG2
+		JSR 	MULT_BY_100			; Multiply R0 value by 100
+		ADD	R3, R3, R0			; Add hundreds's place value from R0 to R3
 		
 		LD 	R7, SAVE_LOC1			; Load SAVE_LOC to R7
 		RET					; Return back to calling program
@@ -210,18 +208,36 @@ DECODE
 ; [INSERT COMMENTS HERE]
 ;--------------------------------------;
 MULT_BY_10
+	ST 	R0, SAVE_REG1		; save ten's place value in SAVE_REG1
 	AND 	R0, R0, #0		; Clear R0
 	AND 	R4, R4, #0		; Clear R4
-	LD 	R4, SAVE_REG1		; Load ten's place value to R4
+	LD 	R4, SAVE_REG1		; Load ten's place value  value to R4
 	LD 	R2, TEN			;load loop counter to R2
-MULT_LOOP
+MULT10_LOOP
 	ADD 	R0, R0, R4
 	ADD 	R2, R2, #-1		; decrement loop counter
-	BRp 	MULT_LOOP
-	ST 	R0, SAVE_REG2
+	BRp 	MULT10_LOOP
+	RET
+
+;--------------------------------------;
+;Subroutine MULT_BY_100: Multiply argument by 100 
+;--------------------------------------;
+; [INSERT COMMENTS HERE]
+;--------------------------------------;
+MULT_BY_100
+	ST 	R0, SAVE_REG2		; save hundred's place value in SAVE_REG2
+	AND 	R0, R0, #0		; Clear R0
+	AND 	R4, R4, #0		; Clear R4
+	LD 	R4, SAVE_REG2		; Load hundred's place value to R4
+	LD 	R2, HUNDRED		; load loop counter to R2
+MULT100_LOOP
+	ADD 	R0, R0, R4
+	ADD 	R2, R2, #-1		; decrement loop counter
+	BRp 	MULT100_LOOP
 	RET
 
 TEN	.FILL xA
+HUNDRED	.FILL x64
 ;-------------------------------------------------------------------------
 
 
