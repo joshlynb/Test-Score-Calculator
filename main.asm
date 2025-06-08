@@ -1,25 +1,14 @@
-.ORIG x3000                                                                                  
+.ORIG x3000     
 
-;------------------------------MAIN PROGRAM-------------------------------
-
-MAIN_LOOP
-	JSR GET_INPUT
-	JSR GET_SCORE
-
-	HALT
-
-MAIN_LC		.FILL x5
-;------------------------------END OF MAIN--------------------------------
-
-
-
+                                                                             
 ;--------------------------GLOBAL VARIABLES-------------------------------
-SaveONES	.FILL x0		; temporarily saves one's place digit
+SaveONES	.FILL x0		; Save one's place - temporarily saves one's place digit
 SaveTENS	.FILL x0		; temporarily saves ten's place digit
 SaveHUND	.FILL x0		; temporarily saves hundred's place digit
 
 SaveScore	.FILL x0		; temporarily saves score value 
 SCORES		.BLKW #5		; Array containing scores
+SaveArrAdd	.FILL x0		; SaveArrAdd: Save array address - temporarily saves [SCORES address + array index]
 
 SaveReg1	.FILL x0		
 SaveReg2	.FILL x0
@@ -29,12 +18,67 @@ SaveLoc1	.FILL x0		; save location address 1
 SaveLoc2	.FILL x0		; save location address 2
 SaveLoc3	.FILL x0		; save location address 3
 SaveLoc4	.FILL x0		; save location address 4
+
 ;-------------------------------------------------------------------------
 
+;------------------------------MAIN PROGRAM-------------------------------
+;-------------------;		
+; Initialize SaveArrAdd 
+;-------------------;
+	JSR CLEAR_REGISTER
+	LEA 	R6, SCORES			; save address of SCORES memory location to R6
+	ST	R6, SaveArrAdd			; initializing SaveArrAdd with address of SCORES
+
+;-------------------;		
+; Collecting user input for a total of 5 iterations
+;-------------------;
+	JSR GET_INPUT
+	JSR GET_SCORE
+	JSR 	STORE_SCORES
+	;[Insert JSR subroutine responsible for letter grade assignment]
+
+	JSR 	GET_INPUT
+	JSR 	GET_SCORE
+	JSR 	STORE_SCORES
+	;[Insert JSR subroutine responsible for letter grade assignment]
+
+	JSR 	GET_INPUT
+	JSR 	GET_SCORE
+	JSR 	STORE_SCORES
+	;[Insert JSR subroutine responsible for letter grade assignment]
+
+	JSR 	GET_INPUT
+	JSR 	GET_SCORE
+	JSR 	STORE_SCORES
+	;[Insert JSR subroutine responsible for letter grade assignment]
+
+	JSR 	GET_INPUT
+	JSR 	GET_SCORE
+	JSR 	STORE_SCORES
+	;[Insert JSR subroutine responsible for letter grade assignment]
+
+;-------------------;		
+; Reinitialize SaveArrAdd 
+;-------------------;
+	LEA 	R6, SCORES			; save address of SCORES memory location to R6
+	ST	R6, SaveArrAdd			; initializing SaveArrAdd with address of SCORES
+
+		HALT
+
+
+;------------------------------END OF MAIN--------------------------------
 
 
 
 
+STORE_SCORES	
+		LD	R6, SaveArrAdd
+		LD	R3, SaveScore			; load score from SaveScore address to R3
+		STR	R3, R6, #0			; Store score (saved in R3) into SCORES memory location
+		ADD 	R6, R6, #1			; point to next address in SCORE
+		ST	R6, SaveArrAdd			; saves SCORE address 
+		RET					; Return back to calling program
+	
 ;-------------------------------------------------------------------------
 ;--------------------------------------;
 ;Subroutine CLEAR_REGISTER
@@ -59,7 +103,7 @@ CLEAR_REGISTER	AND R0, R0, #0
 ; R4 : INPUT_LC, contains the value of character input loop counter
 ;--------------------------------------;
 GET_INPUT
-		ST	R7, SaveLoc1			; store R7 in SAVE_LOC1 so we can use RET to return to calling program (aka main program)
+		ST	R7, SaveLoc1			; store R7 in SaveLoc1 so we can use RET to return to calling program (aka main program)
 		JSR	CLEAR_REGISTER			; Clear Registers 0-5
 		LEA	R0, PROMPT1
 		PUTS					; Output PROMPT1: "\nEnter a test score in the format XYZ (ex. 100, 098, 015) \n"
@@ -71,7 +115,7 @@ INPUT_LOOP
 		JSR 	PUSH_CHAR			; Push character into stack
 		ADD 	R4, R4, #-1			; Decrement Loop Counter
 		BRp 	INPUT_LOOP			; loop until R4 is zero or negative
-		LD 	R7, SaveLoc1			; Load SAVE_LOC to R7
+		LD 	R7, SaveLoc1			; Load SaveLoc1 to R7
 		RET					; Return back to calling program
 
 PROMPT1 .STRINGZ "\nEnter a test score in the format XYZ (ex. 100, 098, 015) \n"
@@ -91,7 +135,7 @@ INPUT_LC	.FILL x3				; initializing GET_INPUT loop counter at x3
 ; SAVE_REG1: contains ten's place digit	
 ;--------------------------------------;
 GET_SCORE
-		ST	R7, SaveLoc2			; store R7 in SAVE_LOC2 so we can use RET to return to calling program (aka main program)
+		ST	R7, SaveLoc2			; store R7 in SaveLoc2 so we can use RET to return to calling program (aka main program)
 ;-------------------;	
 ;adding one's place 
 ; value to score
@@ -124,7 +168,7 @@ GET_SCORE
 		JSR 	MULT_BY_100			; Multiply R0 value by 100
 		ADD	R3, R3, R0			; Add hundreds's place value from R0 to R3
 		ST 	R3, SaveScore			; Add score to temporary address
-		LD 	R7, SaveLoc2			; Load SAVE_LOC2 to R7
+		LD 	R7, SaveLoc2			; Load SaveLoc2 to R7
 		RET					; Return back to calling program
 
 ;--------------------------------------;
@@ -166,6 +210,21 @@ HUNDRED	.FILL x64
 ;-------------------------------------------------------------------------
 
 
+;---------------------------------STORE SCORE-----------------------------
+;--------------------------------------;
+;Subroutine STORE_SCORES: Store score value into SCORES array 
+;--------------------------------------;
+; [INSERT COMMENTS HERE]
+;--------------------------------------;
+;STORE_SCORES
+	;ST	R7, SaveLoc3		; store R7 in SaveLoc3 so we can use RET to return to calling program (aka main program)
+	;LEA 	R6, SCORES			; save address of SCORES memory location to R6
+	;AND 	R3, R3, #0			; Clear R3
+	;LD	R3, SaveScore		; load score from SaveScore address to R3
+	;STR	R3, R6, #0			; Store score (saved in R3) into SCORES memory location
+	;LD	R7, SaveLoc3
+	;RET
+;-------------------------------------------------------------------------
 
 
 ;------------------------------STACK MANAGEMENT---------------------------
