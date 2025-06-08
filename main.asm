@@ -14,19 +14,21 @@ MAIN_LC		.FILL x5
 
 
 ;--------------------------GLOBAL VARIABLES-------------------------------
-SaveONES	.FILL x0
-SaveTENS	.FILL x0
-SaveHUND	.FILL x0
-SaveScore	.FILL x0
-SaveReg1	.FILL x0
+SaveONES	.FILL x0		; temporarily saves one's place digit
+SaveTENS	.FILL x0		; temporarily saves ten's place digit
+SaveHUND	.FILL x0		; temporarily saves hundred's place digit
+
+SaveScore	.FILL x0		; temporarily saves score value 
+SCORES		.BLKW #5		; Array containing scores
+
+SaveReg1	.FILL x0		
 SaveReg2	.FILL x0
 SaveReg3	.FILL x0
 
-SaveLoc1	.FILL x0
-SaveLoc2	.FILL x0
-SaveLoc3	.FILL x0
-SaveLoc4	.FILL x0
-SCORES		.BLKW #5		;Array containing scores
+SaveLoc1	.FILL x0		; save location address 1
+SaveLoc2	.FILL x0		; save location address 2
+SaveLoc3	.FILL x0		; save location address 3
+SaveLoc4	.FILL x0		; save location address 4
 ;-------------------------------------------------------------------------
 
 
