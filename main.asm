@@ -70,14 +70,6 @@ SaveLoc4	.FILL x0		; save location address 4
 
 
 
-
-STORE_SCORES	
-		LD	R6, SaveArrAdd
-		LD	R3, SaveScore			; load score from SaveScore address to R3
-		STR	R3, R6, #0			; Store score (saved in R3) into SCORES memory location
-		ADD 	R6, R6, #1			; point to next address in SCORE
-		ST	R6, SaveArrAdd			; saves SCORE address 
-		RET					; Return back to calling program
 	
 ;-------------------------------------------------------------------------
 ;--------------------------------------;
@@ -216,14 +208,13 @@ HUNDRED	.FILL x64
 ;--------------------------------------;
 ; [INSERT COMMENTS HERE]
 ;--------------------------------------;
-;STORE_SCORES
-	;ST	R7, SaveLoc3		; store R7 in SaveLoc3 so we can use RET to return to calling program (aka main program)
-	;LEA 	R6, SCORES			; save address of SCORES memory location to R6
-	;AND 	R3, R3, #0			; Clear R3
-	;LD	R3, SaveScore		; load score from SaveScore address to R3
-	;STR	R3, R6, #0			; Store score (saved in R3) into SCORES memory location
-	;LD	R7, SaveLoc3
-	;RET
+STORE_SCORES	
+		LD	R6, SaveArrAdd
+		LD	R3, SaveScore			; load score from SaveScore address to R3
+		STR	R3, R6, #0			; Store score (saved in R3) into SCORES memory location
+		ADD 	R6, R6, #1			; point to next address in SCORE
+		ST	R6, SaveArrAdd			; saves SCORE address 
+		RET					; Return back to calling program
 ;-------------------------------------------------------------------------
 
 
