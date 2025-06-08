@@ -2,23 +2,31 @@
 
 ;------------------------------MAIN PROGRAM-------------------------------
 
-	JSR SCORE_LOOP
+MAIN_LOOP
+	JSR GET_INPUT
+	JSR GET_SCORE
+
 	HALT
 
+MAIN_LC		.FILL x5
 ;------------------------------END OF MAIN--------------------------------
 
 
 
 ;--------------------------GLOBAL VARIABLES-------------------------------
-SAVE_REG1	.FILL x0
-SAVE_REG2	.FILL x0
-SAVE_REG3	.FILL x0
-SAVE_REG4	.FILL x0
-SAVE_REG5	.FILL x0
-SAVE_REG6	.FILL x0
-SAVE_LOC1	.FILL x0
-SAVE_LOC2	.FILL x0
-SCORES		.BLKW #5		; Array containing scores
+SaveONES	.FILL x0
+SaveTENS	.FILL x0
+SaveHUND	.FILL x0
+SaveScore	.FILL x0
+SaveReg1	.FILL x0
+SaveReg2	.FILL x0
+SaveReg3	.FILL x0
+
+SaveLoc1	.FILL x0
+SaveLoc2	.FILL x0
+SaveLoc3	.FILL x0
+SaveLoc4	.FILL x0
+SCORES		.BLKW #5		;Array containing scores
 ;-------------------------------------------------------------------------
 
 
@@ -43,25 +51,35 @@ CLEAR_REGISTER	AND R0, R0, #0
 
 
 ;------------------------------GET USER INPUT-----------------------------
-SCORE_LOOP
-		ST	R7, SAVE_LOC1			; store R7 in SAVE_LOC1 so we can use RET to return to calling program (aka main program)
-		JSR	CLEAR_REGISTER			; Clear Registers 0-5
-		LEA	R0, PROMPT1
-		PUTS					; Output PROMPT1: "Enter a test score in the format XYZ (ex. 100, 098, 015) \n"
-		LD	R4, INPUT_LC			; load Input Loop Counter into R4
-
 ;--------------------------------------;	
 ;Subroutine GET_INPUT
 ;--------------------------------------;
 ; R4 : INPUT_LC, contains the value of character input loop counter
 ;--------------------------------------;
 GET_INPUT
+		ST	R7, SaveLoc1			; store R7 in SAVE_LOC1 so we can use RET to return to calling program (aka main program)
+		JSR	CLEAR_REGISTER			; Clear Registers 0-5
+		LEA	R0, PROMPT1
+		PUTS					; Output PROMPT1: "\nEnter a test score in the format XYZ (ex. 100, 098, 015) \n"
+		LD	R4, INPUT_LC			; load Input Loop Counter into R4
+
+INPUT_LOOP
 		GETC					; Get character
 		OUT					; Echo character to console
 		JSR 	PUSH_CHAR			; Push character into stack
 		ADD 	R4, R4, #-1			; Decrement Loop Counter
-		BRp 	GET_INPUT			; loop until R4 is zero or negative
+		BRp 	INPUT_LOOP			; loop until R4 is zero or negative
+		LD 	R7, SaveLoc1			; Load SAVE_LOC to R7
+		RET					; Return back to calling program
 
+PROMPT1 .STRINGZ "\nEnter a test score in the format XYZ (ex. 100, 098, 015) \n"
+INPUT_LC	.FILL x3				; initializing GET_INPUT loop counter at x3
+;-------------------------------------------------------------------------
+
+
+
+
+;-----------------------------STORE USER INPUT----------------------------
 ;--------------------------------------;	
 ;Subroutine GET_SCORE
 ;--------------------------------------;
@@ -71,7 +89,7 @@ GET_INPUT
 ; SAVE_REG1: contains ten's place digit	
 ;--------------------------------------;
 GET_SCORE
-
+		ST	R7, SaveLoc2			; store R7 in SAVE_LOC2 so we can use RET to return to calling program (aka main program)
 ;-------------------;	
 ;adding one's place 
 ; value to score
@@ -80,6 +98,7 @@ GET_SCORE
 		AND 	R4, R4, #0			; Clear R4
 		JSR 	POP_CHAR			; POP character (one's place digit) from stack
 		JSR 	ENCODE				; Convert ASCII character to hexidecimal
+		ST 	R0, SaveONES			; save one's place value in SaveONES
 		ADD	R3, R0, #0			; STORE popped (one's place) value from R0 to R3
 		
 
@@ -100,18 +119,48 @@ GET_SCORE
 		AND 	R0, R0, #0			; Clear R0
 		JSR 	POP_CHAR			; POP character (hundred's digit) from stack
 		JSR 	ENCODE				; Convert ASCII character to hexidecimal
-		;ST 	R0, SAVE_REG2			; save R0 value in SAVE_REG2
 		JSR 	MULT_BY_100			; Multiply R0 value by 100
 		ADD	R3, R3, R0			; Add hundreds's place value from R0 to R3
-		
-		LD 	R7, SAVE_LOC1			; Load SAVE_LOC to R7
+		ST 	R3, SaveScore			; Add score to temporary address
+		LD 	R7, SaveLoc2			; Load SAVE_LOC2 to R7
 		RET					; Return back to calling program
 
-PROMPT1 .STRINGZ "Enter a test score in the format XYZ (ex. 100, 098, 015) \n"
-PROMPT2 .STRINGZ "\nScore you entered is: \n"
-PROMPT3 .STRINGZ "\nScore successfully converted!"
-INPUT_LC	.FILL x3			; initializing GET_INPUT loop counter at x3
-CHAR 	.BLKW x3
+;--------------------------------------;
+;Subroutine MULT_BY_10: Multiply argument by 10 
+;--------------------------------------;
+; [INSERT COMMENTS HERE]
+;--------------------------------------;
+MULT_BY_10
+	ST 	R0, SaveTENS		; save ten's place value in SaveReg1
+	AND 	R0, R0, #0		; Clear R0
+	AND 	R4, R4, #0		; Clear R4
+	LD 	R4, SaveTENS		; Load ten's place value  value to R4
+	LD 	R2, TEN			;load loop counter to R2
+MULT10_LOOP
+	ADD 	R0, R0, R4
+	ADD 	R2, R2, #-1		; decrement loop counter
+	BRp 	MULT10_LOOP
+	RET
+
+;--------------------------------------;
+;Subroutine MULT_BY_100: Multiply argument by 100 
+;--------------------------------------;
+; [INSERT COMMENTS HERE]
+;--------------------------------------;
+MULT_BY_100
+	ST 	R0, SaveHUND		; save hundred's place value in SaveReg2
+	AND 	R0, R0, #0		; Clear R0
+	AND 	R4, R4, #0		; Clear R4
+	LD 	R4, SaveHUND		; Load hundred's place value to R4
+	LD 	R2, HUNDRED		; load loop counter to R2
+MULT100_LOOP
+	ADD 	R0, R0, R4
+	ADD 	R2, R2, #-1		; decrement loop counter
+	BRp 	MULT100_LOOP
+	RET
+
+TEN	.FILL xA
+HUNDRED	.FILL x64
 ;-------------------------------------------------------------------------
 
 
@@ -124,13 +173,20 @@ CHAR 	.BLKW x3
 ;--------------------------------------;
 ;Subroutine PUSH_CHAR : Push character into stack
 ;--------------------------------------;
+; R1:
+; R2:
+; R5:
+; R6:
+;--------------------------------------;
 PUSH_CHAR  
-		LD R1, MAX			; MAX = -x3FFB
-       		ADD R2, R6, R1			; compare stack pointer with x3FFF
-       		BRz FAIL            		; Branch if stack is full
-       		ADD R6, R6, #-7			; Adjust stack pointer (decrement by 7 because ASCII is 7 bits)
-       		STR R0, R6, #0			; Store value in R0 to stack
-        	AND R5, R5, #0           	; SUCCESS: R5 = 0
+		LD	R6, SaveStackAdd		; load stack address into R6
+		LD 	R1, MAX				; MAX = -x3FFB
+       		ADD 	R2, R6, R1			; compare stack pointer with x3FFF
+       		BRz	FAIL            		; Branch if stack is full
+       		ADD 	R6, R6, #-7			; Adjust stack pointer (decrement by 7 because ASCII is 7 bits)
+		ST	R6, SaveStackAdd		; store R6 into stack address
+       		STR 	R0, R6, #0			; Store value in R0 to stack
+        	AND 	R5, R5, #0           		; SUCCESS: R5 = 0
         	RET
 
 MAX	.FILL xC005
@@ -139,11 +195,18 @@ MAX	.FILL xC005
 ;--------------------------------------;
 ;Subroutine POP_CHAR: Pop character from stack
 ;--------------------------------------;
-POP_CHAR    	LD R1, EMPTY			; EMPTY = -x4000
+; R1:
+; R2:
+; R5:
+; R6:
+;--------------------------------------;
+POP_CHAR    	LD	R6, SaveStackAdd	; load stack address into R6
+		LD R1, EMPTY			; EMPTY = -x4000
 		ADD R2, R6, R1			; COMPARE STACK POINTER with x3FFF
   		BRz FAIL			; Branch if stack is empty
     		LDR R0, R6, #0			; Load popped value into R0
    		ADD R6, R6, #7			; Adjust stack pointer 
+		ST	R6, SaveStackAdd		; store R6 into stack address
    		AND R5, R5, #0           	; SUCCESS: R5 = 0
    		RET
 
@@ -156,7 +219,7 @@ FAIL    AND R5, R5, #0			;OVERFLOW/UNDERFLOW DETECTED, FAIL: R5 = 1
    	ADD R5, R5, #1			;
    	RET
 
-
+SaveStackAdd	.FILL x0
 ;-------------------------------------------------------------------------
 
 
@@ -167,7 +230,7 @@ FAIL    AND R5, R5, #0			;OVERFLOW/UNDERFLOW DETECTED, FAIL: R5 = 1
 
 
 ;--------------------------------------;
-;Subroutine ENCODE: (ASCII to Hexadecimal conversion)
+; Subroutine ENCODE: (ASCII to Hexadecimal conversion)
 ;--------------------------------------;
 ; R1: Contains ASCII digit to value digit offset (
 ; R0: Contains ASCII value to be converted into hexadecimal value
@@ -186,7 +249,8 @@ ENCODE
 ;--------------------------------------;
 ;Subroutine DECODE: (ASCII to Hexadecimal conversion)
 ;--------------------------------------;
-; [INSERT COMMENTS HERE]
+; R1: Contains ASCII digit to value digit offset (
+; R0: Contains ASCII value to be converted into hexadecimal value
 ;--------------------------------------;
 DECODE
 
@@ -197,44 +261,6 @@ DECODE
 	ADD R1, R1, #3
 	ADD R0, R0, R1
 	RET
-
-
-;--------------------------------------;
-;Subroutine MULT_BY_10: Multiply argument by 10 
-;--------------------------------------;
-; [INSERT COMMENTS HERE]
-;--------------------------------------;
-MULT_BY_10
-	ST 	R0, SAVE_REG1		; save ten's place value in SAVE_REG1
-	AND 	R0, R0, #0		; Clear R0
-	AND 	R4, R4, #0		; Clear R4
-	LD 	R4, SAVE_REG1		; Load ten's place value  value to R4
-	LD 	R2, TEN			;load loop counter to R2
-MULT10_LOOP
-	ADD 	R0, R0, R4
-	ADD 	R2, R2, #-1		; decrement loop counter
-	BRp 	MULT10_LOOP
-	RET
-
-;--------------------------------------;
-;Subroutine MULT_BY_100: Multiply argument by 100 
-;--------------------------------------;
-; [INSERT COMMENTS HERE]
-;--------------------------------------;
-MULT_BY_100
-	ST 	R0, SAVE_REG2		; save hundred's place value in SAVE_REG2
-	AND 	R0, R0, #0		; Clear R0
-	AND 	R4, R4, #0		; Clear R4
-	LD 	R4, SAVE_REG2		; Load hundred's place value to R4
-	LD 	R2, HUNDRED		; load loop counter to R2
-MULT100_LOOP
-	ADD 	R0, R0, R4
-	ADD 	R2, R2, #-1		; decrement loop counter
-	BRp 	MULT100_LOOP
-	RET
-
-TEN	.FILL xA
-HUNDRED	.FILL x64
 ;-------------------------------------------------------------------------
 
 
