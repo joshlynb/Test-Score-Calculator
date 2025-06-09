@@ -1,0 +1,38 @@
+;----------------------------CALCULATE MIN & MAX--------------------------
+;Max score stored in R5
+
+CALCULATE_MAX	       ;Calculate MAX score
+
+	LD R1, SaveArrAdd	;Load address of SCORES in R1
+	LDR R5, R1, #0		;Set R5 to first score, first score = MAX
+	ADD R2, R1, #1		;next score
+	AND R0, R0, #0		;Loop counter in R0
+  ADD R0, R0, #4    ;Loop counter set to 4
+
+;start loop
+MAX_LOOP
+	LDR R3, R2, #0		;LOAD R2 (NEXT SCORE) INTO R3
+	NOT R4, R5
+	ADD R4, R4, #1		;2S COMP
+	ADD R4, R3, R4		;R4 = R3 - R5
+	BRn SKIP		      ;IF R3 < R5, SKIP
+	ADD R5, R3, #0		;else update MAX in R5 (R3 = R5)
+	ST R5, MAX_GRADE	;Store max grade in R5 (Added in global variables) 
+
+;move through array
+SKIP
+	ADD R2, R2, #1		;move to next score in array
+	ADD R0, R0, #-1		;Decrement loop
+	BRp MAX_LOOP		  ;repeat loop
+
+;Display MAX, WIP - This will probably need to be moved
+LEA R0, MAXIMUM
+PUTS
+MAXIMUM .STRINGZ 		"\nMAXIMUM SCORE: \n"
+MAX_GRADE            ;not sure if this needs to be fill x0 or blkw but this is to store max
+
+;CLEAR REGISTERS, might not need?
+	JSR CLEAR_REGISTER
+	RET
+
+;-------------------------------------------------------------------------
