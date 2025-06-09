@@ -1,7 +1,7 @@
 ;----------------------------CALCULATE MIN & MAX--------------------------
 ;Max score stored in R5
 
-CALCULATE_MAX	       		;Calculate MAX score
+CALCULATE_MAX	       		;Calculate MAX score subroutine
 
 	LD R1, SaveArrAdd	;Load address of SCORES in R1
 	LDR R5, R1, #0		;Set R5 to first score, first score = MAX
@@ -38,7 +38,7 @@ MAX_GRADE            ;not sure if this needs to be fill x0 or blkw but this is t
 ;MINIMUM
 ;MIN STORED IN R5	
 
-CALCULATE_MIN
+CALCULATE_MIN			;Calculate MIN score subroutine
 	LD R1, SaveArrAdd	;Load address of SCORES into R1
 	LDR R5, R1, #0		;Set R5 to first score, first score = MIN
 	ADD R2, R1, #1		;Next 
@@ -51,9 +51,10 @@ MIN_LOOP
 	ADD R4, R4, #1		;2S COMP R4 = -R3
 	ADD R4, R5, R4		;R4 = R5 - R3
 	BRn SKIP_MIN		;IF R5 < R3, SKIP
-	ADD R5, R3, #0		;Else< update MIN
-	ST R4, MIN_GRADE	;store in R5
+	ADD R5, R3, #0		;Else, update MIN
+	ST R5, MIN_GRADE	;store in R5
 
+;array for minimum
 SKIP_MIN
 	ADD R2, R2, #1		;Next score
 	ADD R0, R0, #-1		;Decrement Loop
@@ -63,9 +64,14 @@ SKIP_MIN
 LEA R0, MINIMUM
 PUTS
 MINIMUM .STRINGZ	"MINIMUM SCORE: "
+MIN_GRADE		;Store minimum 	
 
 ;Clear Registers 
 	JSR CLEAR_REGISTER
 	RET
 
+
+;add to main program: JSR CALCULATE_MAX AND JSR CALCULATE_MIN
+;add to global: MAX_GRADE - to store max grade
+;add to global : MIN_GRADE - to store minimum grade
 ;-------------------------------------------------------------------------
