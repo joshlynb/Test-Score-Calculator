@@ -19,6 +19,9 @@ SaveLoc2	.FILL x0		; save location address 2
 SaveLoc3	.FILL x0		; save location address 3
 SaveLoc4	.FILL x0		; save location address 4
 
+MAX_GRADE	.FILL x0		;holds maximum grade
+MIN_GRADE	.FILL x0		;holds minimum grade
+
 ;-------------------------------------------------------------------------
 
 ;------------------------------MAIN PROGRAM-------------------------------
@@ -62,7 +65,11 @@ SaveLoc4	.FILL x0		; save location address 4
 ;-------------------;
 	LEA 	R6, SCORES			; save address of SCORES memory location to R6
 	ST	R6, SaveArrAdd			; initializing SaveArrAdd with address of SCORES
-
+	;call Max function
+	JSR CALCULATE_MAX
+	;call Min function
+	JSR CALCULATE_MIN	
+	
 		HALT
 
 
@@ -319,7 +326,80 @@ DECODE
 
 
 ;----------------------------CALCULATE MIN & MAX--------------------------
-;[INSERT CODE]
+;MAXIMUM
+;Max score stored in R5
+
+CALCULATE_MAX	;Calculate MAX score
+	
+	ST R7, SaveLoc3		;Save return address so it does not get overwritten
+
+	LD R1, SaveArrAdd	;Load address of SCORES in R1
+	LDR R5, R1, #0		;Set R5 to first score, first score = MAX
+	ADD R2, R1, #1		;R2 moves to next score
+	AND R0, R0, #0		;Loop counter in R0
+	ADD R0, R0, #4		;Counter = 4 
+
+	
+MAX_LOOP
+	LDR R3, R2, #0		;LOAD R2 (NEXT SCORE) INTO R3
+	NOT R4, R5
+	ADD R4, R4, #1		;2S COMP R4 = -R5
+	ADD R4, R3, R4		;R4 = R3 - R5
+	BRn SKIP		;IF R3 < R5, SKIP
+	ADD R5, R3, #0		;else, update MAX 
+	
+SKIP
+	ADD R2, R2, #1		;R2 move to next score in array
+	ADD R0, R0, #-1		;Decrement loop
+	BRp MAX_LOOP		;Loop until 5 scores
+
+	ST R5, MAX_GRADE
+	LD R7, SaveLoc3		;restore return address
+	RET
+
+;display max
+LEA R0, MAXIMUM
+PUTS
+MAXIMUM .STRINGZ	"Maximum Score: "
+
+;MINIMUM
+;MIN STORED IN R5	
+
+CALCULATE_MIN
+
+	ST R7, SaveLoc4		;store
+	
+	LD R1, SaveArrAdd	;Load address of SCORES into R1
+	LDR R5, R1, #0		;Set R5 to first score, first score = MIN
+	ADD R2, R1, #1		;Next 
+	AND R0, R0, #0		;Loop counter in R0
+	ADD R0, R0, #4		;Counter =4
+
+MIN_LOOP
+	LDR R3, R2, #0		;Load next score to R3
+	NOT R4, R3
+	ADD R4, R4, #1		;2S COMP R4 = -R3
+	ADD R4, R5, R4		;R4 = R5 - R3
+	BRn SKIP_MIN		;IF R5 < R3, SKIP
+	ADD R5, R3, #0		;Else update MIN
+	
+
+SKIP_MIN
+	ADD R2, R2, #1		;Next score
+	ADD R0, R0, #-1		;Decrement Loop
+	BRp MIN_LOOP		;Loop until done
+	ST R5, MIN_GRADE
+	
+	LD R7, SaveLoc4		;return
+	RET
+	
+	
+;Display Min
+LEA R0, MINIMUM
+PUTS
+MINIMUM .STRINGZ	"Minimum Score: "
+
+
 ;-------------------------------------------------------------------------
 
 
