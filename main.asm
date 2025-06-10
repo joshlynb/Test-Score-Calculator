@@ -299,7 +299,7 @@ ENCODE
 	RET
 
 ;--------------------------------------;
-;Subroutine DECODE: (ASCII to Hexadecimal conversion)
+;Subroutine DECODE: (Hexadecimal to ASCII conversion)
 ;--------------------------------------;
 ; R1: Contains ASCII digit to value digit offset (
 ; R0: Contains ASCII value to be converted into hexadecimal value
@@ -307,7 +307,7 @@ ENCODE
 DECODE
 
 	AND R1, R1, #0			; Clear R1
-	ADD R1, R1, #15			; Subtracting 48 (ASCII offset) 
+	ADD R1, R1, #15			; Add 48 (ASCII offset) 
 	ADD R1, R1, #15
 	ADD R1, R1, #15
 	ADD R1, R1, #3
