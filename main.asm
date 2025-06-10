@@ -357,7 +357,7 @@ SKIP
 	LD R7, SaveLoc3		;restore return address
 	RET
 
-;display max
+;display max (we'll move this chunk to the display part of the code)
 LEA R0, MAXIMUM
 PUTS
 MAXIMUM .STRINGZ	"Maximum Score: "
@@ -394,7 +394,7 @@ SKIP_MIN
 	RET
 	
 	
-;Display Min
+;Display Min (we'll move this chunk to the display part of the code)
 LEA R0, MINIMUM
 PUTS
 MINIMUM .STRINGZ	"Minimum Score: "
