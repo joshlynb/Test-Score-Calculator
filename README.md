@@ -8,8 +8,7 @@ The corresponding letter grades are:
 To run this program, open the LC-3 simulator exe and load the Test Score Calculator .obj file and run the program.
 
 ## Authors
-Joshlyn Bui,
-Gray Greenridge, and
+Joshlyn Bui
 Heather Laird
 
 ## Date Published
